@@ -9,13 +9,15 @@ const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/11dcc
 let accessToken = '';
 
 // =================================================================
-// 2. AUTENTICACIÓN (Flujo de Concesión Implícita)
+// 2. AUTENTICACIÓN (Flujo de Concesión Implícita) - CORREGIDO
 // =================================================================
 
 document.getElementById('login-spotify').addEventListener('click', () => {
     const scopes = 'user-read-private user-read-email';
-    // Construye la URL de autenticación
+    
+    // ✅ URL DE AUTORIZACIÓN OFICIAL DE SPOTIFY
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=${scopes}`;
+    
     window.location = authUrl;
 });
 
