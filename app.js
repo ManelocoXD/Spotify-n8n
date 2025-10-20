@@ -2,9 +2,9 @@
 // ⚠️ 1. CONFIGURACIÓN FINAL ⚠️
 // =================================================================
 
-const CLIENT_ID = 'd3f296d31beff403db8139d10c5abfee3';
-const REDIRECT_URI = 'https://spotifyjam.vercel.app/'; 
-const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86';
+const CLIENT_ID = 'd3f296d31beff403db8139d10c5abfee3'; // Tu ID de cliente
+const REDIRECT_URI = 'https://spotifyjam.vercel.app/'; // Tu URL de Vercel
+const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86'; // Tu URL de Webhook de n8n
 
 let accessToken = '';
 
@@ -14,8 +14,10 @@ let accessToken = '';
 
 document.getElementById('login-spotify').addEventListener('click', () => {
     const scopes = 'user-read-private user-read-email';
-    // Construye la URL de autenticación
+    
+    // ✅ CORRECCIÓN DE LA URL DE AUTORIZACIÓN
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=${scopes}`;
+    
     window.location = authUrl;
 });
 
@@ -57,7 +59,7 @@ document.getElementById('search-button').addEventListener('click', async () => {
     document.getElementById('status').textContent = '';
 
     try {
-        // 🚨 CORRECCIÓN CLAVE: Usamos la URL de la API de Spotify
+        // ✅ CORRECCIÓN DE LA URL DE BÚSQUEDA
         const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
