@@ -2,7 +2,7 @@
 // ⚠️ 1. CONFIGURACIÓN FINAL ⚠️
 // =================================================================
 
-const CLIENT_ID = 'd3f296d31beff403db8139d10c5abfee3'; // Tu ID de cliente
+const CLIENT_ID = 'd3f296d31bef403db8139d10c5ebfee3'; // Tu ID de cliente
 const REDIRECT_URI = 'https://spotifyjam.vercel.app/'; // Tu URL de Vercel
 const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86'; // Tu URL de Webhook de n8n
 
