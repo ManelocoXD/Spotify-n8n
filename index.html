@@ -144,6 +144,9 @@
         const CLIENT_ID = 'd3f296d31bef403db8139d10c5ebfee3';
         const REDIRECT_URI = 'https://spotifyjam.vercel.app/';
         const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/Busqueda';
+        
+        // 🔧 Si tienes problemas con CORS, descomenta esta línea y comenta la de arriba:
+        // const N8N_WEBHOOK_URL = 'https://corsproxy.io/?' + encodeURIComponent('https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86');
 
         let accessToken = '';
 
@@ -451,35 +454,82 @@
             const statusElement = document.getElementById('status');
             statusElement.className = '';
             statusElement.textContent = `Enviando "${name}" a tu flujo de n8n...`;
+            
+            addDebugMessage(`⏳ Enviando al webhook: ${name}`);
+
+            // Preparar datos
+            const payload = {
+                trackUri: uri,
+                songName: name,
+                artistName: artist,
+                timestamp: new Date().toISOString()
+            };
+
+            addDebugMessage(`📦 Payload: ${JSON.stringify(payload, null, 2)}`);
 
             try {
+                // Intentar con fetch normal
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
+                    mode: 'cors', // Explícitamente solicitar CORS
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        trackUri: uri,
-                        songName: name,
-                        artistName: artist
-                    })
+                    body: JSON.stringify(payload)
                 });
 
+                addDebugMessage(`📡 Respuesta HTTP: ${response.status} ${response.statusText}`);
+
                 if (response.ok) {
+                    let responseData;
+                    try {
+                        responseData = await response.json();
+                        addDebugMessage(`✅ Respuesta de n8n: ${JSON.stringify(responseData)}`, 'success');
+                    } catch {
+                        responseData = await response.text();
+                        addDebugMessage(`✅ Respuesta de n8n (texto): ${responseData}`, 'success');
+                    }
+                    
                     statusElement.className = 'success';
                     statusElement.textContent = `✅ ¡Éxito! "${name}" ha sido enviada a n8n.`;
                     addDebugMessage(`✅ Canción enviada: ${name}`, 'success');
                 } else {
                     const errorText = await response.text();
+                    addDebugMessage(`❌ Error HTTP ${response.status}: ${errorText}`, 'error');
                     statusElement.className = 'error';
                     statusElement.textContent = `❌ Error de n8n (${response.status}): ${errorText}`;
-                    addDebugMessage(`❌ Error n8n: ${response.status}`, 'error');
                 }
 
             } catch (error) {
-                addDebugMessage(`❌ Error al enviar: ${error.message}`, 'error');
-                statusElement.className = 'error';
-                statusElement.textContent = '❌ Error de conexión al webhook.';
+                addDebugMessage(`❌ Error crítico: ${error.message}`, 'error');
+                addDebugMessage(`❌ Tipo de error: ${error.name}`, 'error');
+                
+                // Si es un error CORS, dar instrucciones específicas
+                if (error.message.includes('fetch') || error.name === 'TypeError') {
+                    statusElement.className = 'error';
+                    statusElement.innerHTML = `
+                        ❌ <strong>Error CORS</strong>: El webhook de n8n no acepta peticiones desde este dominio.<br>
+                        <small style="display: block; margin-top: 10px;">
+                        🔧 Solución: En tu flujo de n8n, ve al nodo Webhook y activa:<br>
+                        • "Respond" → "Immediately"<br>
+                        • En opciones avanzadas, añade headers CORS
+                        </small>
+                    `;
+                    
+                    // Mostrar información adicional para debug
+                    addDebugMessage('💡 SOLUCIÓN: Configura CORS en n8n:', 'warning');
+                    addDebugMessage('1. Abre tu workflow en n8n', 'warning');
+                    addDebugMessage('2. Click en el nodo Webhook', 'warning');
+                    addDebugMessage('3. En "Respond" selecciona "Immediately"', 'warning');
+                    addDebugMessage('4. Agrega Response Headers:', 'warning');
+                    addDebugMessage('   - Access-Control-Allow-Origin: *', 'warning');
+                    addDebugMessage('   - Access-Control-Allow-Methods: POST, OPTIONS', 'warning');
+                    addDebugMessage('   - Access-Control-Allow-Headers: Content-Type', 'warning');
+                } else {
+                    statusElement.className = 'error';
+                    statusElement.textContent = `❌ Error: ${error.message}`;
+                }
             }
         }
     </script>
