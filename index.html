@@ -143,10 +143,12 @@
         // =================================================================
         const CLIENT_ID = 'd3f296d31bef403db8139d10c5ebfee3';
         const REDIRECT_URI = 'https://spotifyjam.vercel.app/';
-        const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/Busqueda';
         
-        // 🔧 Si tienes problemas con CORS, descomenta esta línea y comenta la de arriba:
-        // const N8N_WEBHOOK_URL = 'https://corsproxy.io/?' + encodeURIComponent('https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86');
+        // ✅ OPCIÓN 1: URL directa (requiere CORS configurado en n8n)
+        // const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86';
+        
+        // ✅ OPCIÓN 2: Con proxy CORS (funciona sin configurar n8n, pero más lento)
+        const N8N_WEBHOOK_URL = 'https://corsproxy.io/?' + encodeURIComponent('https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86');
 
         let accessToken = '';
 
