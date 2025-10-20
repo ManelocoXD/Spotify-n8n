@@ -14,10 +14,8 @@ let accessToken = '';
 
 document.getElementById('login-spotify').addEventListener('click', () => {
     const scopes = 'user-read-private user-read-email';
-    
-    // ✅ CORRECCIÓN DE LA URL DE AUTORIZACIÓN
+    // Construye la URL de autenticación
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=${scopes}`;
-    
     window.location = authUrl;
 });
 
