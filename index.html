@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Canción a n8n por Spotify</title>
+    <style>
+        /* Estilos inspirados en Spotify para una mejor estética */
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 20px; background-color: #121212; color: #FFFFFF; }
+        h1 { color: #1DB954; font-weight: 700; margin-bottom: 25px; }
+        #search-container { margin-bottom: 20px; display: flex; gap: 10px; }
+        #results { list-style: none; padding: 0; }
+        #results li { 
+            padding: 12px; 
+            margin-bottom: 8px; 
+            border: 1px solid #333; 
+            background-color: #282828;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+        }
+        #results li:hover { background-color: #404040; transition: background-color 0.2s; }
+        input[type="text"] { 
+            padding: 10px; 
+            width: 300px; 
+            background-color: #333; 
+            border: 1px solid #535353; 
+            color: white; 
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button { 
+            background-color: #535353; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        button:hover { background-color: #666; }
+        .send-button { background-color: #1DB954; font-weight: bold; }
+        .send-button:hover { background-color: #1ed760; }
+        #status { margin-top: 20px; font-weight: bold; padding: 10px; border-radius: 4px; }
+        .success { background-color: #0b3d1b; color: #1DB954; }
+        .error { background-color: #4d0000; color: #ff3333; }
+    </style>
+</head>
+<body>
+    <h1>Busca y Envía una Canción a n8n</h1>
+    
+    <div id="auth-status">
+        <button id="login-spotify">Iniciar Sesión con Spotify</button>
+    </div>
+
+    <div id="search-container" style="display:none;">
+        <input type="text" id="song-query" placeholder="Escribe el nombre de la canción..." >
+        <button id="search-button">Buscar en Spotify</button>
+    </div>
+
+    <ul id="results"></ul>
+    
+    <div id="status"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
