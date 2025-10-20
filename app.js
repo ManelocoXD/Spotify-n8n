@@ -1,11 +1,10 @@
 // =================================================================
-// ⚠️ 1. CONFIGURACIÓN: REEMPLAZA ESTOS VALORES ⚠️
+// ⚠️ 1. CONFIGURACIÓN FINAL ⚠️
 // =================================================================
 
-const CLIENT_ID = 'TU_CLIENT_ID_DE_SPOTIFY'; // ⬅️ Reemplaza con tu Client ID
-// ⬅️ Reemplaza con el dominio de tu proyecto Vercel (Ej: https://midominio.vercel.app/)
-const REDIRECT_URI = 'https://midominio-de-vercel.vercel.app/'; 
-const N8N_WEBHOOK_URL = 'TU_URL_DE_WEBHOOK_DE_N8N'; // ⬅️ Reemplaza con la URL que copiaste de n8n
+const CLIENT_ID = 'd3f296d31beff403db8139d10c5abfee3';
+const REDIRECT_URI = 'https://spotifyjam.vercel.app/'; 
+const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook/11dccc2e-717d-4de5-a35f-1066589c1a86';
 
 let accessToken = '';
 
@@ -58,6 +57,7 @@ document.getElementById('search-button').addEventListener('click', async () => {
     document.getElementById('status').textContent = '';
 
     try {
+        // 🚨 CORRECCIÓN CLAVE: Usamos la URL de la API de Spotify
         const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
