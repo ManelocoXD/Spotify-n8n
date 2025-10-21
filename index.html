@@ -341,16 +341,22 @@
             statusElement.textContent = message;
         }
 
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
+        // ESTA ES LA VERSIÓN CORREGIDA
+function escapeHtml(text) {
+    // ¡NUEVO! Comprueba si el texto es nulo, indefinido o no es un string
+    if (typeof text !== 'string') {
+        return ''; // Devuelve una cadena vacía en lugar de 'crashear'
+    }
+
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
     </script>
 </body>
 </html>
