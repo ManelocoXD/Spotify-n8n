@@ -263,6 +263,9 @@
         // =================================================================
         // RENDERIZAR RESULTADOS
         // =================================================================
+        // =================================================================
+        // RENDERIZAR RESULTADOS (VERSIÓN CORREGIDA)
+        // =================================================================
         function renderResults(tracks) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
@@ -272,16 +275,32 @@
                 return;
             }
 
+            // 'tracks' es el array de JSON que recibimos
             tracks.forEach(track => {
                 const li = document.createElement('li');
                 
+                // 1. Procesamos los artistas
+                // track.artists es un array de objetos, los unimos en un string
+                const artistNames = track.artists.map(artist => artist.name).join(', ');
+
+                // 2. Procesamos el nombre del álbum
+                // track.album es un objeto, sacamos su 'name'
+                const albumName = track.album.name;
+
+                // 3. Procesamos la carátula
+                // track.album.images es un array, usamos la imagen mediana (índice 1) o la pequeña (índice 2)
+                const albumArtUrl = (track.album.images && track.album.images.length > 0)
+                                    ? track.album.images[1].url // Índice 1 es 300x300px
+                                    : ''; // Fallback por si no hay imagen
+
+                // 4. Construimos el HTML con las variables correctas
                 li.innerHTML = `
                     <div class="track-info">
-                        ${track.albumArt ? `<img src="${track.albumArt}" alt="Album" class="album-art">` : ''}
+                        ${albumArtUrl ? `<img src="${albumArtUrl}" alt="Album" class="album-art">` : ''}
                         <div class="track-details">
                             <div class="track-name">${escapeHtml(track.name)}</div>
-                            <div class="track-artist">${escapeHtml(track.artists)}</div>
-                            ${track.album ? `<div class="track-album">${escapeHtml(track.album)}</div>` : ''}
+                            <div class="track-artist">${escapeHtml(artistNames)}</div>
+                            ${albumName ? `<div class="track-album">${escapeHtml(albumName)}</div>` : ''}
                         </div>
                     </div>
                     <button class="send-button">✓ Añadir</button>
@@ -289,12 +308,13 @@
                 
                 resultsDiv.appendChild(li);
 
+                // 5. Asignamos el listener al botón
                 li.querySelector('.send-button').addEventListener('click', () => {
-                    addToQueue(track.uri, track.name, track.artists);
+                    // Pasamos el URI de la canción, el nombre y el string de artistas
+                    addToQueue(track.uri, track.name, artistNames);
                 });
             });
         }
-
         // =================================================================
         // AÑADIR A COLA (selección manual)
         // =================================================================
