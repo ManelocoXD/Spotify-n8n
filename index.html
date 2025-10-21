@@ -179,8 +179,8 @@
         // =================================================================
         // CONFIGURACIÓN
         // =================================================================
-        const N8N_WEBHOOK_URL = 'https://n8n-server.griffin-paridae.ts.net/webhook-test/Busqueda';
-
+        const N8N_SEARCH_WEBHOOK = 'https://n8n-server.griffin-paridae.ts.net/webhook/Busqueda';
+        const N8N_ADD_WEBHOOK = 'https://n8n-server.griffin-paridae.ts.net/webhook/Añadir';
         // =================================================================
         // EVENT LISTENERS
         // =================================================================
@@ -215,14 +215,13 @@
             statusElement.textContent = '';
 
             try {
-                const response = await fetch(N8N_WEBHOOK_URL, {
+                const response = await fetch(N8N_SEARCH_WEBHOOK, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        action: 'search',
                         query: query
                     })
                 });
@@ -234,28 +233,16 @@
                 const data = await response.json();
                 console.log('Respuesta de n8n:', data);
                 
-                // Caso 1: Resultado único - ya añadido automáticamente
-                if (data.status === 'added') {
-                    resultsDiv.innerHTML = '';
-                    showStatus(`✅ ¡Listo! "${data.songName}" por ${data.artistName} se ha añadido a la cola`, 'success');
-                    document.getElementById('song-query').value = '';
-                }
-                // Caso 2: Múltiples resultados - usuario debe elegir
-                else if (data.status === 'multiple' && data.tracks && data.tracks.length > 0) {
-                    renderResults(data.tracks);
-                    showStatus(`Se encontraron ${data.tracks.length} resultados. Selecciona la canción correcta:`, 'info');
-                }
-                // Caso 3: Sin resultados
-                else if (data.status === 'no_results' || (data.tracks && data.tracks.length === 0)) {
+                // El workflow devuelve directamente el array de tracks o un objeto con tracks
+                const tracks = Array.isArray(data) ? data : (data.tracks || []);
+                
+                if (tracks.length === 0) {
                     resultsDiv.innerHTML = '<li>😕 No se encontraron canciones con ese nombre</li>';
                     showStatus('Intenta con otro término de búsqueda', 'warning');
-                }
-                // Caso 4: Error desde n8n
-                else if (data.status === 'error') {
-                    throw new Error(data.message || 'Error desconocido desde n8n');
-                }
-                else {
-                    throw new Error('Respuesta inesperada del servidor');
+                } else {
+                    // Siempre mostrar resultados para que el usuario elija
+                    renderResults(tracks);
+                    showStatus(`Se encontraron ${tracks.length} resultado(s). Selecciona la canción:`, 'info');
                 }
 
             } catch (error) {
@@ -319,17 +306,14 @@
             statusElement.textContent = `⏳ Añadiendo "${name}" a la cola...`;
 
             try {
-                const response = await fetch(N8N_WEBHOOK_URL, {
+                const response = await fetch(N8N_ADD_WEBHOOK, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        action: 'add',
-                        trackUri: uri,
-                        songName: name,
-                        artistName: artist
+                        uri: uri
                     })
                 });
 
@@ -337,18 +321,10 @@
                     throw new Error(`Error del servidor: ${response.status}`);
                 }
 
-                const data = await response.json();
-                console.log('Respuesta de añadir:', data);
-                
-                if (data.status === 'success' || data.status === 'added') {
-                    resultsDiv.innerHTML = '';
-                    showStatus(`✅ ¡Perfecto! "${name}" se ha añadido a la cola`, 'success');
-                    document.getElementById('song-query').value = '';
-                } else if (data.status === 'error') {
-                    throw new Error(data.message || 'Error al añadir la canción');
-                } else {
-                    throw new Error('Respuesta inesperada del servidor');
-                }
+                // Respuesta exitosa (puede ser 204 No Content o JSON)
+                resultsDiv.innerHTML = '';
+                showStatus(`✅ ¡Perfecto! "${name}" se ha añadido a la cola`, 'success');
+                document.getElementById('song-query').value = '';
 
             } catch (error) {
                 console.error('Error:', error);
